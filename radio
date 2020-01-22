@@ -1,0 +1,123 @@
+#!/usr/bin/env bash
+# set -e
+
+export AWS_PROFILE=gabriel
+export AWS_DEFAULT_REGION=eu-west-1
+
+INSTANCE_NAME="on-the-radio"
+IP_NAME="on-the-weekend_ip"
+STATIC_IP="34.250.6.15"
+
+function get_status() {
+  aws lightsail get-instance-state --instance-name "$INSTANCE_NAME" 2>/dev/null
+}
+
+function get_status_code() {
+  STATUS=$(get_status)
+  if [ -z "$STATUS" ]; then
+     echo "-1"
+  else
+    echo "$STATUS" | jq .state.code 
+  fi
+}
+
+function is_instance_running() {
+  [[ $(get_status_code) = "16" ]]
+}
+
+function is_instance_pending() {
+  [[ $(get_status_code) = "0" ]]
+}
+
+function wait_for_non_pending() {
+  while true; do
+    if ! is_instance_pending; then
+      break
+    fi
+    echo "waiting for instance to stabilize..."
+    sleep 6
+  done
+}
+
+function create_instance() {
+  ./template.sh userdata.template.sh ./userdata.params.sh > ./userdata.txt
+
+  aws lightsail create-instances \
+  --instance-names "$INSTANCE_NAME" \
+  --availability-zone  "eu-west-1b" \
+  --blueprint-id "ubuntu_18_04" \
+  --bundle-id "nano_2_0" \
+  --tags "key=Project,value=on-the-weekend" \
+  --user-data file://./userdata.txt
+
+  rm -f userdata.txt
+
+  wait_for_non_pending
+  ensure_static_ip
+  open_ports
+}
+
+function update_config() {
+  ./template.sh icecast.template.xml icecast.params.sh | ssh -t "$STATIC_IP" 'sudo sh -c "cat > /etc/icecast2/icecast.xml"'
+}
+
+function update_instance() {
+  update_config
+}
+
+function is_static_ip_attached() {
+  [[ $(aws lightsail get-static-ip --static-ip-name "$IP_NAME" | jq .staticIp.isAttached) = "true" ]]
+}
+
+function ensure_static_ip() {
+  if is_static_ip_attached; then
+    return
+  fi
+  aws lightsail attach-static-ip --static-ip-name "$IP_NAME" --instance-name "$INSTANCE_NAME"
+}
+
+function create_or_update_instance() {
+  if is_instance_running; then
+    echo "Instance already exists, updating"
+    update_instance
+  else
+    echo "Creating instance $INSTANCE_NAME"
+    create_instance
+  fi
+}
+
+function open_ports() {
+  aws lightsail open-instance-public-ports \
+  --port-info "fromPort=8000,toPort=8001,protocol=TCP" \
+  --instance-name "$INSTANCE_NAME" 
+}
+
+function sub_sync() {
+  create_or_update_instance
+}
+
+function sub_delete() {
+  aws lightsail delete-instance --instance-name "$INSTANCE_NAME"
+}
+
+function sub_recreate() {
+  echo "Running recreate"
+  sub_delete
+  sub_sync
+}
+
+subcommand=$1
+case $subcommand in
+    "" | "-h" | "--help")
+        sub_help
+        ;;
+    *)
+        shift
+        sub_${subcommand} $@
+        if [ $? = 127 ]; then
+            echo "Error: '$subcommand' is not a known subcommand." >&2
+            echo "       Run '$ProgName --help' for a list of known subcommands." >&2
+            exit 1
+        fi
+        ;;
+esac
