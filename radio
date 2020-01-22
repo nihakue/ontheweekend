@@ -4,7 +4,7 @@
 export AWS_PROFILE=gabriel
 export AWS_DEFAULT_REGION=eu-west-1
 
-INSTANCE_NAME="on-the-radio"
+INSTANCE_NAME="on-the-weekend"
 IP_NAME="on-the-weekend_ip"
 STATIC_IP="34.250.6.15"
 

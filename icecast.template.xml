@@ -15,10 +15,10 @@
     <limits>
         <clients>400</clients>
         <sources>2</sources>
-	<threadpool>10</threadpool>
+        <threadpool>10</threadpool>
         <queue-size>5242880</queue-size>
-        <client-timeout>30</client-timeout>
-        <header-timeout>15</header-timeout>
+        <client-timeout>60</client-timeout>
+        <header-timeout>100</header-timeout>
         <source-timeout>10000</source-timeout>	
         <!-- If enabled, this will provide a burst of data when a client 
              first connects, thereby significantly reducing the startup 
