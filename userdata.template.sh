@@ -14,6 +14,9 @@ cat >/etc/icecast2/icecast.xml <<'EOT'
 ${ICECAST_CONFIG_XML}
 EOT
 
+# Increase file limit
+ex -s -c '2i|ulimit -n 10240' -c x /etc/init.d/icecast2
+
 # Start server
 /etc/init.d/icecast2 start
 sleep 1

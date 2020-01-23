@@ -8,6 +8,10 @@ INSTANCE_NAME="on-the-weekend"
 IP_NAME="on-the-weekend_ip"
 STATIC_IP="34.250.6.15"
 
+STRESS_MAX_CONNS=8000
+STRESS_CONNS_PER_INSTANCE=500
+STRESS_NUM_INSTANCES=$(expr "$STRESS_MAX_CONNS" / "$STRESS_CONNS_PER_INSTANCE")
+
 function get_status() {
   aws lightsail get-instance-state --instance-name "$INSTANCE_NAME" 2>/dev/null
 }
@@ -92,6 +96,10 @@ function open_ports() {
   --instance-name "$INSTANCE_NAME" 
 }
 
+function get_private_ip() {
+  aws lightsail get-instance --instance-name "$INSTANCE_NAME" | jq -r .instance.privateIpAddress
+}
+
 function sub_sync() {
   create_or_update_instance
 }
@@ -104,6 +112,30 @@ function sub_recreate() {
   echo "Running recreate"
   sub_delete
   sub_sync
+}
+
+function sub_stresstest() {
+  export PRIVATE_IP=$(get_private_ip)
+  ./template.sh stress.template.sh > stress.txt
+
+  STRESS_NAMES=$(seq 17 "$STRESS_NUM_INSTANCES" | awk '{print "\"StressTest"$0"\""}' | paste -sd "," -)
+
+  aws lightsail create-instances \
+  --instance-names "[$STRESS_NAMES]" \
+  --availability-zone  "eu-west-1b" \
+  --blueprint-id "ubuntu_18_04" \
+  --bundle-id "nano_2_0" \
+  --tags "key=Project,value=on-the-weekend" \
+  --user-data file://./stress.txt
+
+  # rm -f stress.txt
+}
+
+function sub_stopstress() {
+  for i in $(seq 1 $STRESS_NUM_INSTANCES)                                                                                      130 ↵
+  do
+    aws lightsail delete-instance --instance-name "StressTest$i"
+  done
 }
 
 subcommand=$1
