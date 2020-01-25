@@ -17,6 +17,8 @@ EOT
 # Increase file limit
 ex -s -c '2i|ulimit -n 10240' -c x /etc/init.d/icecast2
 
+echo "$SILENCE_BASE64" | base64 -d > /usr/share/icecast2/web/silence_stereo_192.mp3
+
 # Start server
 /etc/init.d/icecast2 start
 sleep 1
