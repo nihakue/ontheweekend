@@ -13,13 +13,13 @@
     -->
 
     <limits>
-        <clients>400</clients>
         <sources>2</sources>
+        <clients>50</clients>
         <threadpool>10</threadpool>
-        <queue-size>5242880</queue-size>
-        <client-timeout>60</client-timeout>
+        <queue-size>102400</queue-size>
+        <client-timeout>100</client-timeout>
         <header-timeout>100</header-timeout>
-        <source-timeout>10000</source-timeout>	
+        <source-timeout>1000</source-timeout>	
         <!-- If enabled, this will provide a burst of data when a client 
              first connects, thereby significantly reducing the startup 
              time for listeners that do substantial buffering. However,
@@ -130,19 +130,21 @@
 
     <!-- Default settings for all mounts that don't have a specific <mount type="normal">.
     -->
-    <!-- 
-    <mount type="default">
+    
+    <mount>
         <public>0</public>
-        <intro>/server-wide-intro.ogg</intro>
-        <max-listener-duration>3600</max-listener-duration>
-        <authentication type="url">
-                <option name="mount_add" value="http://auth.example.org/stream_start.php"/>
-        </authentication>
-        <http-headers>
-                <header name="foo" value="bar" />
-        </http-headers>
+        <mount-name>/stream</mount-name>
+        <fallback-mount>/silence_stereo_192.mp3</fallback-mount>
+        <fallback-override>1</fallback-override>
     </mount>
-    -->
+
+    <!-- <mount>
+        <public>0</public>
+        <mount-name>/test</mount-name>
+        <fallback-mount>/silence_stereo_192.mp3</fallback-mount>
+        <fallback-override>1</fallback-override>
+    </mount> -->
+
 
     <!-- Normal mounts -->
     <!--

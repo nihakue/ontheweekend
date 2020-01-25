@@ -59,6 +59,15 @@ function create_instance() {
   wait_for_non_pending
   ensure_static_ip
   open_ports
+  send_silence
+}
+
+function to_instance() {
+  ssh -t "$STATIC_IP" "sudo sh -c 'cat > $1'"
+}
+
+function send_silence() {
+  cat silence_stereo_192.mp3 | to_instance "/usr/share/icecast2/web/silence_stereo_192.mp3"
 }
 
 function update_config() {
