@@ -28,7 +28,13 @@ jobs:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: eu-west-1
-
+        
+    - name: Install SSH key
+    uses: shimataro/ssh-key-action@v2
+    with:
+      key: ${{ secrets.SSH_KEY }}
+      known_hosts: ${{ secrets.KNOWN_HOSTS }}
+  
     # Runs a single command using the runners shell
     - name: synchronize deployment
       env:
