@@ -1,3 +1,5 @@
+set -euf -o pipefail
+
 if [[ ! $SOURCE_PASSWORD ]]; then
   SOURCE_PASSWORD=$RANDOM
 fi

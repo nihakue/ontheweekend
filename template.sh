@@ -1,4 +1,6 @@
-#!/bin/sh
+#!/usr/bin/env bash
+
+set -euf -o pipefail
 
 PROG=$(basename $0)
 
