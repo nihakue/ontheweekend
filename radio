@@ -61,7 +61,7 @@ function create_instance() {
 }
 
 function update_config() {
-  ./template.sh icecast.template.xml icecast.params.sh | ssh -t "$STATIC_IP" 'sudo sh -c "cat > /etc/icecast2/icecast.xml && /etc/init.d/icecast2 reload"'
+  ./template.sh icecast.template.xml icecast.params.sh | ssh -tt "ubuntu@$STATIC_IP" 'sudo sh -c "cat > /etc/icecast2/icecast.xml && /etc/init.d/icecast2 reload"'
 }
 
 function update_instance() {
