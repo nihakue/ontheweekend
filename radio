@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 # set -e
 
-export AWS_PROFILE=gabriel
 export AWS_DEFAULT_REGION=eu-west-1
 
 INSTANCE_NAME="on-the-weekend"
