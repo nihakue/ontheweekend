@@ -13,13 +13,13 @@
     -->
 
     <limits>
-        <sources>2</sources>
-        <clients>50</clients>
+        <sources>10</sources>
+        <clients>500</clients>
         <threadpool>10</threadpool>
-        <queue-size>102400</queue-size>
+        <queue-size>5242880</queue-size>
         <client-timeout>100</client-timeout>
         <header-timeout>100</header-timeout>
-        <source-timeout>1000</source-timeout>	
+        <source-timeout>60</source-timeout>	
         <!-- If enabled, this will provide a burst of data when a client 
              first connects, thereby significantly reducing the startup 
              time for listeners that do substantial buffering. However,
