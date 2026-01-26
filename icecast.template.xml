@@ -127,8 +127,7 @@
         <mount-name>/stream</mount-name>
         <fallback-mount>/silence_stereo_192.mp3</fallback-mount>
         <fallback-override>1</fallback-override>
-        <!-- 64KB burst = ~2.7 sec at 192kbps -->
-        <burst-size>65536</burst-size>
+        <burst-size>0</burst-size>
         <queue-size>5242880</queue-size>
     </mount>
 
