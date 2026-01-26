@@ -1,0 +1,27 @@
+[Unit]
+Description=Radio Show Scheduler Web UI
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/radio-scheduler
+Restart=always
+RestartSec=5
+
+# Environment - override in /etc/radio-scheduler.env
+EnvironmentFile=-/etc/radio-scheduler.env
+Environment=SHOWS_DIR=/var/lib/radio/shows
+Environment=LISTEN_ADDR=127.0.0.1:8080
+Environment=TZ=Europe/London
+Environment=SATURDAY_TIME=18:00
+Environment=SUNDAY_TIME=10:00
+
+# Security hardening
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/radio/shows
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
