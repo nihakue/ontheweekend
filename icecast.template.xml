@@ -16,21 +16,13 @@
         <sources>10</sources>
         <clients>500</clients>
         <threadpool>10</threadpool>
-        <queue-size>5242880</queue-size>
+        <!-- Global settings ~1 sec buffer for silence fallback files (192kbps = 24KB/sec) -->
+        <queue-size>24576</queue-size>
         <client-timeout>100</client-timeout>
         <header-timeout>100</header-timeout>
-        <source-timeout>60</source-timeout>	
-        <!-- If enabled, this will provide a burst of data when a client 
-             first connects, thereby significantly reducing the startup 
-             time for listeners that do substantial buffering. However,
-             it also significantly increases latency between the source
-             client and listening client.  For low-latency setups, you
-             might want to disable this. -->
-        <burst-on-connect>1</burst-on-connect>
-        <!-- same as burst-on-connect, but this allows for being more
-             specific on how much to burst. Most people won't need to
-             change from the default 64k. Applies to all mountpoints  -->
-        <burst-size>65535</burst-size>
+        <source-timeout>60</source-timeout>
+        <burst-on-connect>0</burst-on-connect>
+        <burst-size>0</burst-size>
     </limits>
 
     <authentication>
@@ -131,25 +123,14 @@
     <!-- Default settings for all mounts that don't have a specific <mount type="normal">.
     -->
     
+    <!-- Stream mount with reasonable buffering; global settings are minimal for silence fallback -->
     <mount>
         <public>0</public>
         <mount-name>/stream</mount-name>
         <fallback-mount>/silence_stereo_192.mp3</fallback-mount>
         <fallback-override>1</fallback-override>
-        <burst-size>0</burst-size>
-        <queue-size>65536</queue-size>
-    </mount>
-
-    <!-- Silence fallbacks with no buffering so listeners switch instantly when source connects -->
-    <mount>
-        <mount-name>/silence_stereo_192.mp3</mount-name>
-        <burst-size>0</burst-size>
-        <queue-size>0</queue-size>
-    </mount>
-    <mount>
-        <mount-name>/silence_stereo_320.mp3</mount-name>
-        <burst-size>0</burst-size>
-        <queue-size>0</queue-size>
+        <burst-size>65536</burst-size>
+        <queue-size>524288</queue-size>
     </mount>
 
     <!-- <mount>
