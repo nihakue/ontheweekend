@@ -136,6 +136,8 @@
         <mount-name>/stream</mount-name>
         <fallback-mount>/silence_stereo_192.mp3</fallback-mount>
         <fallback-override>1</fallback-override>
+        <burst-size>0</burst-size>
+        <queue-size>65536</queue-size>
     </mount>
 
     <!-- Silence fallbacks with no buffering so listeners switch instantly when source connects -->
