@@ -20,8 +20,8 @@
         <client-timeout>100</client-timeout>
         <header-timeout>100</header-timeout>
         <source-timeout>60</source-timeout>
-        <burst-on-connect>1</burst-on-connect>
-        <burst-size>65535</burst-size>
+        <burst-on-connect>0</burst-on-connect>
+        <burst-size>0</burst-size>
     </limits>
 
     <authentication>
