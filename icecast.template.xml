@@ -136,7 +136,7 @@
         <public>0</public>
         <mount-name>/silence</mount-name>
         <burst-size>0</burst-size>
-        <queue-size>0</queue-size>
+        <queue-size>98304</queue-size>
     </mount>
 
     <!-- <mount>
