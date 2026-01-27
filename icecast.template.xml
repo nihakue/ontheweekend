@@ -17,9 +17,9 @@
         <clients>500</clients>
         <threadpool>10</threadpool>
         <queue-size>5242880</queue-size>
-        <client-timeout>100</client-timeout>
-        <header-timeout>100</header-timeout>
-        <source-timeout>60</source-timeout>
+        <client-timeout>30</client-timeout>
+        <header-timeout>15</header-timeout>
+        <source-timeout>15</source-timeout>
         <burst-on-connect>0</burst-on-connect>
         <burst-size>0</burst-size>
     </limits>
@@ -131,12 +131,12 @@
         <queue-size>5242880</queue-size>
     </mount>
 
-    <!-- Silence source mount with minimal buffering for instant switchover -->
+    <!-- Silence source mount -->
     <mount>
         <public>0</public>
         <mount-name>/silence</mount-name>
         <burst-size>0</burst-size>
-        <queue-size>98304</queue-size>
+        <queue-size>524288</queue-size>
     </mount>
 
     <!-- <mount>
