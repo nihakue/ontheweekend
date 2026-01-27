@@ -7,7 +7,7 @@ export AWS_DEFAULT_REGION=eu-west-1
 
 INSTANCE_NAME="on-the-weekend"
 IP_NAME="on-the-weekend_ip"
-STATIC_IP="${STATIC_IP:-}"
+HOST="${HOST:-}"
 
 STRESS_MAX_CONNS=8000
 STRESS_CONNS_PER_INSTANCE=500
@@ -63,7 +63,7 @@ function create_instance() {
 }
 
 function update_config() {
-  ./template.sh icecast.template.xml icecast.params.sh | ssh -tt "ubuntu@$STATIC_IP" 'sudo sh -c "cat > /etc/icecast2/icecast.xml && /etc/init.d/icecast2 reload"'
+  ./template.sh icecast.template.xml icecast.params.sh | ssh -tt "ubuntu@$HOST" 'sudo sh -c "cat > /etc/icecast2/icecast.xml && /etc/init.d/icecast2 reload"'
 }
 
 function update_instance() {
@@ -110,7 +110,7 @@ function sub_sync() {
 }
 
 function sub_bootstrap() {
-  ./template.sh userdata.template.sh ./userdata.params.sh | ssh "ubuntu@$STATIC_IP" 'sudo bash'
+  ./template.sh userdata.template.sh ./userdata.params.sh | ssh "ubuntu@$HOST" 'sudo bash'
 }
 
 function sub_delete() {

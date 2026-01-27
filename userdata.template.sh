@@ -54,7 +54,7 @@ apt-get -y install caddy
 
 # Configure caddy with scheduler
 cat >/etc/caddy/Caddyfile <<'EOT'
-${DOMAIN} {
+${HOST} {
 	# Schedule UI - password protected
 	handle /schedule* {
 		basicauth {
