@@ -25,8 +25,9 @@ else
     echo "==> Go not found, assuming binary already exists at /usr/local/bin/radio-scheduler"
 fi
 
-# Install systemd unit for the web UI
+# Install systemd units
 cp "$SCRIPT_DIR/systemd/radio-scheduler.service" /etc/systemd/system/
+cp "$SCRIPT_DIR/systemd/radio-silence.service" /etc/systemd/system/
 
 # Create environment file if it doesn't exist
 if [[ ! -f /etc/radio-scheduler.env ]]; then
@@ -54,9 +55,10 @@ EOF
     echo "==> Created /etc/radio-scheduler.env - edit this file to configure!"
 fi
 
-# Reload systemd and enable the scheduler service
+# Reload systemd and enable services
 systemctl daemon-reload
 systemctl enable --now radio-scheduler.service
+systemctl enable --now radio-silence.service
 
 echo "==> Installation complete!"
 echo ""

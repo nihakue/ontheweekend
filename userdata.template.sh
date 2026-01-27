@@ -20,7 +20,6 @@ EOT
 ex -s -c '2i|ulimit -n 10240' -c x /etc/init.d/icecast2
 
 git clone https://github.com/nihakue/ontheweekend.git
-cp ./ontheweekend/silence_* /usr/share/icecast2/web/
 
 # Start icecast
 /etc/init.d/icecast2 start
@@ -43,8 +42,9 @@ else
     cd ./ontheweekend/scheduler && CGO_ENABLED=0 go build -o /usr/local/bin/radio-scheduler . && cd -
 fi
 
-# Install systemd unit for scheduler web UI
+# Install systemd units for scheduler and silence stream
 cp ./ontheweekend/scheduler/systemd/radio-scheduler.service /etc/systemd/system/
+cp ./ontheweekend/scheduler/systemd/radio-silence.service /etc/systemd/system/
 
 # Create scheduler environment file
 cat >/etc/radio-scheduler.env <<'EOT'
@@ -59,9 +59,10 @@ SHOWS_DIR=/var/lib/radio/shows
 LISTEN_ADDR=127.0.0.1:8080
 EOT
 
-# Enable and start scheduler
+# Enable and start scheduler and silence stream
 systemctl daemon-reload
 systemctl enable --now radio-scheduler.service
+systemctl enable --now radio-silence.service
 
 # Install caddy
 apt-get -y install debian-keyring debian-archive-keyring apt-transport-https curl
