@@ -75,4 +75,6 @@ systemctl reload caddy
 # Open firewall ports (if not already open)
 iptables -C INPUT -m state --state NEW -p tcp --dport 80 -j ACCEPT 2>/dev/null || iptables -I INPUT 5 -m state --state NEW -p tcp --dport 80 -j ACCEPT
 iptables -C INPUT -m state --state NEW -p tcp --dport 443 -j ACCEPT 2>/dev/null || iptables -I INPUT 5 -m state --state NEW -p tcp --dport 443 -j ACCEPT
+# Some sources, like edcast, don't support https, so we expose 8000 so that caddy can redirect http to https on port 80
+iptables -C INPUT -m state --state NEW -p tcp --dport 8000 -j ACCEPT 2>/dev/null || iptables -I INPUT 5 -m state --state NEW -p tcp --dport 8000 -j ACCEPT
 netfilter-persistent save
