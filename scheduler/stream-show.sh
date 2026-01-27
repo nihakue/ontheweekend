@@ -39,6 +39,7 @@ echo "To: icecast://${ICECAST_HOST}:${ICECAST_PORT}${ICECAST_MOUNT}"
 # -f mp3: output format
 # -content_type audio/mpeg: icecast content type
 ffmpeg -re -i "$SHOW_FILE" \
+    -ar 48000 -ac 2 \
     -acodec libmp3lame -ab 192k \
     -f mp3 -content_type audio/mpeg \
     "icecast://source:${ICECAST_PASSWORD}@${ICECAST_HOST}:${ICECAST_PORT}${ICECAST_MOUNT}"
