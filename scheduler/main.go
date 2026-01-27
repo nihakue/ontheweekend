@@ -190,6 +190,14 @@ func handleUpload(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Check for existing scheduled show at this time slot
+	pattern := filepath.Join(showsDir, filename+".*")
+	matches, _ := filepath.Glob(pattern)
+	if len(matches) > 0 {
+		http.Redirect(w, r, "/?error=A+show+is+already+scheduled+for+this+time+slot.+Delete+it+first.", http.StatusSeeOther)
+		return
+	}
+
 	filename = filename + ext
 	destPath := filepath.Join(showsDir, filename)
 
