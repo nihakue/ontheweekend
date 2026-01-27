@@ -27,26 +27,9 @@ sleep 1
 /etc/init.d/icecast2 restart
 
 # Install scheduler dependencies
-apt-get -y install ffmpeg
+apt-get -y install ffmpeg golang-go
 
-# Setup scheduler directories and scripts
-mkdir -p /var/lib/radio/shows
-cp ./ontheweekend/scheduler/stream-show.sh /usr/local/bin/
-chmod +x /usr/local/bin/stream-show.sh
-
-# Install pre-built scheduler binary (or build if Go available)
-if [[ -f ./ontheweekend/scheduler/radio-scheduler ]]; then
-    cp ./ontheweekend/scheduler/radio-scheduler /usr/local/bin/
-else
-    apt-get -y install golang-go
-    cd ./ontheweekend/scheduler && CGO_ENABLED=0 go build -o /usr/local/bin/radio-scheduler . && cd -
-fi
-
-# Install systemd units for scheduler and silence stream
-cp ./ontheweekend/scheduler/systemd/radio-scheduler.service /etc/systemd/system/
-cp ./ontheweekend/scheduler/systemd/radio-silence.service /etc/systemd/system/
-
-# Create scheduler environment file
+# Create scheduler environment file (before install.sh so it doesn't use defaults)
 cat >/etc/radio-scheduler.env <<'EOT'
 TZ=${TIMEZONE}
 SATURDAY_TIME=${SATURDAY_TIME}
@@ -59,10 +42,8 @@ SHOWS_DIR=/var/lib/radio/shows
 LISTEN_ADDR=127.0.0.1:8080
 EOT
 
-# Enable and start scheduler and silence stream
-systemctl daemon-reload
-systemctl enable --now radio-scheduler.service
-systemctl enable --now radio-silence.service
+# Run the scheduler install script
+./ontheweekend/scheduler/install.sh
 
 # Install caddy
 apt-get -y install debian-keyring debian-archive-keyring apt-transport-https curl
