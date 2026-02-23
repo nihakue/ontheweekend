@@ -5,7 +5,7 @@ Wants=icecast2.service
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/ffmpeg -re -f lavfi -i anullsrc=r=48000:cl=stereo -acodec libmp3lame -ab 192k -f mp3 -content_type audio/mpeg icecast://source:${SOURCE_PASSWORD}@localhost:8000/silence
+ExecStart=/usr/bin/ffmpeg -re -f lavfi -i anullsrc=r=48000:cl=stereo -acodec libmp3lame -ab 320k -f mp3 -content_type audio/mpeg icecast://source:${SOURCE_PASSWORD}@localhost:8000/silence
 Restart=always
 RestartSec=5
 
