@@ -7,7 +7,6 @@ Internet radio station infrastructure - icecast server with scheduled show playb
 - Icecast streaming server with HTTPS via Caddy
 - Web UI for scheduling shows (Saturday evening, Sunday morning slots)
 - Automatic show playback via systemd timers
-- Silence fallback stream with instant switchover when shows start
 
 ## Quick Start (Oracle Cloud)
 
@@ -59,7 +58,6 @@ Internet radio station infrastructure - icecast server with scheduled show playb
 - **caddy** - HTTPS reverse proxy with automatic certificates
 - **ffmpeg** - Audio encoding for scheduled shows
 - **radio-scheduler** - Web UI for uploading and scheduling shows
-- **radio-silence** - Fallback silence stream for instant switchover
 
 ## Commands
 
@@ -78,15 +76,15 @@ Internet radio station infrastructure - icecast server with scheduled show playb
                     └──────┬──────┘
                            │
           ┌────────────────┼────────────────┐
-          │                │                │
-          ▼                ▼                ▼
-    /schedule        /stream           /silence
-          │                │                │
-          ▼                ▼                ▼
-  ┌───────────────┐ ┌───────────┐  ┌───────────────┐
-  │ radio-scheduler│ │  icecast  │  │ radio-silence │
-  │   (Go web UI)  │ │  :8000    │  │   (ffmpeg)    │
-  └───────────────┘ └───────────┘  └───────────────┘
+          │                │
+          ▼                ▼
+    /schedule           /stream
+          │                │
+          ▼                ▼
+  ┌───────────────┐ ┌───────────┐
+  │ radio-scheduler│ │  icecast  │
+  │   (Go web UI)  │ │  :8000    │
+  └───────────────┘ └───────────┘
                            │
                     ┌──────┴──────┐
                     │  Scheduled  │

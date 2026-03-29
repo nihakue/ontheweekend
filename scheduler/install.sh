@@ -27,7 +27,6 @@ fi
 
 # Install systemd units
 cp "$SCRIPT_DIR/systemd/radio-scheduler.service" /etc/systemd/system/
-cp "$SCRIPT_DIR/systemd/radio-silence.service" /etc/systemd/system/
 
 # Create environment file if it doesn't exist
 if [[ ! -f /etc/radio-scheduler.env ]]; then
@@ -58,7 +57,6 @@ fi
 # Reload systemd and enable services
 systemctl daemon-reload
 systemctl enable --now radio-scheduler.service
-systemctl enable --now radio-silence.service
 
 echo "==> Installation complete!"
 echo ""

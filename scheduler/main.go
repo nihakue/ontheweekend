@@ -26,6 +26,7 @@ var (
 	timezone     = getEnv("TZ", "Europe/London")
 	saturdayTime = getEnv("SATURDAY_TIME", "18:00")
 	sundayTime   = getEnv("SUNDAY_TIME", "10:00")
+	basePath     = getEnv("BASE_PATH", "")
 )
 
 func getEnv(key, fallback string) string {
@@ -116,7 +117,7 @@ func handleIndex(w http.ResponseWriter, r *http.Request) {
 
 func handleUpload(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
-		http.Redirect(w, r, "./?error=Method+not+allowed", http.StatusSeeOther)
+		http.Redirect(w, r, basePath+"/?error=Method+not+allowed", http.StatusSeeOther)
 		return
 	}
 
@@ -140,16 +141,16 @@ func handleUpload(w http.ResponseWriter, r *http.Request) {
 
 	case "test":
 		if datetime == "" {
-			http.Redirect(w, r, "./?error=Datetime+required+for+test", http.StatusSeeOther)
+			http.Redirect(w, r, basePath+"/?error=Datetime+required+for+test", http.StatusSeeOther)
 			return
 		}
 		parsed, err := time.ParseInLocation("2006-01-02T15:04", datetime, loc)
 		if err != nil {
-			http.Redirect(w, r, "./?error=Invalid+datetime+format", http.StatusSeeOther)
+			http.Redirect(w, r, basePath+"/?error=Invalid+datetime+format", http.StatusSeeOther)
 			return
 		}
 		if parsed.Before(time.Now().In(loc)) {
-			http.Redirect(w, r, "./?error=Cannot+schedule+in+the+past", http.StatusSeeOther)
+			http.Redirect(w, r, basePath+"/?error=Cannot+schedule+in+the+past", http.StatusSeeOther)
 			return
 		}
 		scheduledTime = parsed
@@ -157,12 +158,12 @@ func handleUpload(w http.ResponseWriter, r *http.Request) {
 
 	case "saturday", "sunday":
 		if date == "" {
-			http.Redirect(w, r, "./?error=Date+required", http.StatusSeeOther)
+			http.Redirect(w, r, basePath+"/?error=Date+required", http.StatusSeeOther)
 			return
 		}
 		parsed, err := time.ParseInLocation("2006-01-02", date, loc)
 		if err != nil {
-			http.Redirect(w, r, "./?error=Invalid+date+format", http.StatusSeeOther)
+			http.Redirect(w, r, basePath+"/?error=Invalid+date+format", http.StatusSeeOther)
 			return
 		}
 		expectedDay := time.Saturday
@@ -172,7 +173,7 @@ func handleUpload(w http.ResponseWriter, r *http.Request) {
 			timeStr = sundayTime
 		}
 		if parsed.Weekday() != expectedDay {
-			http.Redirect(w, r, "./?error=Date+must+be+a+"+slot, http.StatusSeeOther)
+			http.Redirect(w, r, basePath+"/?error=Date+must+be+a+"+slot, http.StatusSeeOther)
 			return
 		}
 		// Combine date with slot time
@@ -180,20 +181,20 @@ func handleUpload(w http.ResponseWriter, r *http.Request) {
 		filename = fmt.Sprintf("%s-%s", slot, date)
 
 	default:
-		http.Redirect(w, r, "./?error=Invalid+slot", http.StatusSeeOther)
+		http.Redirect(w, r, basePath+"/?error=Invalid+slot", http.StatusSeeOther)
 		return
 	}
 
 	file, header, err := r.FormFile("file")
 	if err != nil {
-		http.Redirect(w, r, "./?error=File+required", http.StatusSeeOther)
+		http.Redirect(w, r, basePath+"/?error=File+required", http.StatusSeeOther)
 		return
 	}
 	defer file.Close()
 
 	ext := strings.ToLower(filepath.Ext(header.Filename))
 	if ext != ".mp3" && ext != ".ogg" && ext != ".flac" && ext != ".wav" {
-		http.Redirect(w, r, "./?error=File+must+be+mp3,+ogg,+flac,+or+wav", http.StatusSeeOther)
+		http.Redirect(w, r, basePath+"/?error=File+must+be+mp3,+ogg,+flac,+or+wav", http.StatusSeeOther)
 		return
 	}
 
@@ -202,7 +203,7 @@ func handleUpload(w http.ResponseWriter, r *http.Request) {
 		pattern := filepath.Join(showsDir, filename+".*")
 		matches, _ := filepath.Glob(pattern)
 		if len(matches) > 0 {
-			http.Redirect(w, r, "./?error=A+show+is+already+scheduled+for+this+time+slot.+Delete+it+first.", http.StatusSeeOther)
+			http.Redirect(w, r, basePath+"/?error=A+show+is+already+scheduled+for+this+time+slot.+Delete+it+first.", http.StatusSeeOther)
 			return
 		}
 	}
@@ -212,14 +213,14 @@ func handleUpload(w http.ResponseWriter, r *http.Request) {
 
 	dest, err := os.Create(destPath)
 	if err != nil {
-		http.Redirect(w, r, "./?error=Failed+to+save+file", http.StatusSeeOther)
+		http.Redirect(w, r, basePath+"/?error=Failed+to+save+file", http.StatusSeeOther)
 		return
 	}
 	defer dest.Close()
 
 	if _, err := io.Copy(dest, file); err != nil {
 		os.Remove(destPath)
-		http.Redirect(w, r, "./?error=Failed+to+save+file", http.StatusSeeOther)
+		http.Redirect(w, r, basePath+"/?error=Failed+to+save+file", http.StatusSeeOther)
 		return
 	}
 
@@ -237,14 +238,14 @@ func handleUpload(w http.ResponseWriter, r *http.Request) {
 		matches, _ := filepath.Glob(pattern)
 		if len(matches) > 0 {
 			os.Remove(destPath)
-			http.Redirect(w, r, "./?error=A+show+is+already+scheduled+for+this+time+slot.+Delete+it+first.", http.StatusSeeOther)
+			http.Redirect(w, r, basePath+"/?error=A+show+is+already+scheduled+for+this+time+slot.+Delete+it+first.", http.StatusSeeOther)
 			return
 		}
 
 		// Rename temp file to final name
 		if err := os.Rename(destPath, finalPath); err != nil {
 			os.Remove(destPath)
-			http.Redirect(w, r, "./?error=Failed+to+rename+file", http.StatusSeeOther)
+			http.Redirect(w, r, basePath+"/?error=Failed+to+rename+file", http.StatusSeeOther)
 			return
 		}
 		destPath = finalPath
@@ -256,25 +257,25 @@ func handleUpload(w http.ResponseWriter, r *http.Request) {
 		// Don't fail - file is saved, can be rescheduled on restart
 	}
 
-	http.Redirect(w, r, "./?success=Show+scheduled", http.StatusSeeOther)
+	http.Redirect(w, r, basePath+"/?success=Show+scheduled", http.StatusSeeOther)
 }
 
 func handleDelete(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
-		http.Redirect(w, r, "./?error=Method+not+allowed", http.StatusSeeOther)
+		http.Redirect(w, r, basePath+"/?error=Method+not+allowed", http.StatusSeeOther)
 		return
 	}
 
 	filename := r.FormValue("filename")
 	if filename == "" {
-		http.Redirect(w, r, "./?error=Filename+required", http.StatusSeeOther)
+		http.Redirect(w, r, basePath+"/?error=Filename+required", http.StatusSeeOther)
 		return
 	}
 
 	// Sanitize filename - allow saturday/sunday/test patterns
 	pattern := regexp.MustCompile(`^(saturday|sunday)-\d{4}-\d{2}-\d{2}\.(mp3|ogg|flac|wav)$|^test-\d{4}-\d{2}-\d{2}T\d{2}-\d{2}\.(mp3|ogg|flac|wav)$`)
 	if !pattern.MatchString(filename) {
-		http.Redirect(w, r, "./?error=Invalid+filename", http.StatusSeeOther)
+		http.Redirect(w, r, basePath+"/?error=Invalid+filename", http.StatusSeeOther)
 		return
 	}
 
@@ -285,11 +286,11 @@ func handleDelete(w http.ResponseWriter, r *http.Request) {
 
 	path := filepath.Join(showsDir, filename)
 	if err := os.Remove(path); err != nil {
-		http.Redirect(w, r, "./?error=Failed+to+delete", http.StatusSeeOther)
+		http.Redirect(w, r, basePath+"/?error=Failed+to+delete", http.StatusSeeOther)
 		return
 	}
 
-	http.Redirect(w, r, "./?success=Show+deleted", http.StatusSeeOther)
+	http.Redirect(w, r, basePath+"/?success=Show+deleted", http.StatusSeeOther)
 }
 
 func handlePlay(w http.ResponseWriter, r *http.Request) {
@@ -476,7 +477,7 @@ func unitName(filePath string) string {
 // scheduleShow schedules a show to stream at the given time via systemd-run
 func scheduleShow(filePath string, when time.Time) error {
 	unit := unitName(filePath)
-	calendar := when.Format("2006-01-02 15:04:00")
+	calendar := when.UTC().Format("2006-01-02 15:04:00")
 
 	// Get icecast connection settings from environment
 	icecastHost := getEnv("ICECAST_HOST", "localhost")

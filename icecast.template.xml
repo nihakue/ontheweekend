@@ -19,7 +19,7 @@
         <queue-size>5242880</queue-size>
         <client-timeout>30</client-timeout>
         <header-timeout>15</header-timeout>
-        <source-timeout>15</source-timeout>
+        <source-timeout>120</source-timeout>
         <burst-on-connect>0</burst-on-connect>
         <burst-size>0</burst-size>
     </limits>
@@ -125,26 +125,9 @@
     <mount>
         <public>0</public>
         <mount-name>/stream</mount-name>
-        <fallback-mount>/silence</fallback-mount>
-        <fallback-override>1</fallback-override>
         <burst-size>0</burst-size>
         <queue-size>5242880</queue-size>
     </mount>
-
-    <!-- Silence source mount -->
-    <mount>
-        <public>0</public>
-        <mount-name>/silence</mount-name>
-        <burst-size>0</burst-size>
-        <queue-size>524288</queue-size>
-    </mount>
-
-    <!-- <mount>
-        <public>0</public>
-        <mount-name>/test</mount-name>
-        <fallback-mount>/silence</fallback-mount>
-        <fallback-override>1</fallback-override>
-    </mount> -->
 
 
     <!-- Normal mounts -->
